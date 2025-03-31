@@ -1,0 +1,38 @@
+ // Example configuration file for the YTMG Telegram Bot (UBOT.cfg)
+// Rename this file to UBOT.cfg and modify the values as needed.
+// This file uses JSON format. Comments (lines starting with //) are for explanation only and should be removed if copying directly.
+{
+  // Command prefix (e.g., "," -> ,search, "." -> .search)
+  "prefix": ",",
+
+  // Show step-by-step progress messages during commands (true/false)?
+  "progress_messages": true,
+
+  // Restrict bot usage to users listed in users.csv (true/false)?
+  // If false, any user who can message the bot can use its commands.
+  "whitelist_enabled": true,
+
+  // Automatically delete the bot's previous responses when a new command is issued (true/false)?
+  "auto_clear": true,
+
+  // Enable the ",last" command to show recently downloaded tracks (true/false)?
+  // Requires saving download history to last.csv.
+  "recent_downloads": true,
+
+  // Text added to the caption of sent audio files. Empty string "" for no credit.
+  "bot_credit": "via YTMG",
+
+  // Global switch to enable or disable the bot entirely (true/false).
+  // If false, the bot will ignore all commands.
+  "bot_enabled": true,
+
+  // Default number of search results to fetch from the YouTube Music API for the ,search command.
+  // Display limit is usually lower (MAX_SEARCH_RESULTS_DISPLAY in script). Max recommended API fetch around 15-20.
+  "default_search_limit": 8,
+
+  // Maximum number of top songs to display in the ,see -e (artist details) command.
+  "artist_top_songs_limit": 5,
+
+  // Maximum number of albums to display in the ,see -e (artist details) command.
+  "artist_albums_limit": 3
+}

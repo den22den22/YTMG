@@ -1,0 +1,70 @@
+// Example configuration file for yt-dlp options (yt-dlp.conf)
+// Rename this file to yt-dlp.conf and modify the values as needed.
+// This file uses JSON format. Comments (lines starting with //) are for explanation only and should be removed if copying directly.
+//
+// NOTE: Many features (audio extraction, metadata/thumbnail embedding) REQUIRE FFmpeg to be installed
+//       and accessible in your system's PATH, or specified via "ffmpeg_location".
+// See yt-dlp documentation for all available options: https://github.com/yt-dlp/yt-dlp#configuration
+{
+  // --- Quality and Format Selection ---
+  // Default: 'bestaudio/best' (tries best audio-only, falls back to best overall format)
+  // Alternatives:
+  //   'bestaudio[ext=m4a]' - Best audio in M4A container
+  //   'ba' - Alias for 'bestaudio'
+  //   'worstaudio' - Smallest audio file
+  //   'best' - Best quality overall (might be video)
+  // See: https://github.com/yt-dlp/yt-dlp#format-selection
+  "format": "bestaudio/best",
+
+  // --- Output File Naming and Location ---
+  // Default: '%(title)s-%(id)s.%(ext)s' saved in the script's directory.
+  // The script automatically makes this path absolute if it's relative.
+  // You can use subdirectories like "downloads/%(title)s.%(ext)s". Ensure the directory exists or yt-dlp might fail.
+  // Common placeholders: %(title)s, %(id)s, %(ext)s, %(artist)s, %(album)s, %(playlist_index)s
+  // See: https://github.com/yt-dlp/yt-dlp#output-template
+  "outtmpl": "%(title)s-%(id)s.%(ext)s",
+
+  // --- Playlist Handling ---
+  // Default: true (If you provide a link to a track within a playlist, only download the track)
+  // Set to false if you want single track links to trigger playlist download (generally not recommended for this bot)
+  "noplaylist": true,
+
+  // --- Post-Processing (Requires FFmpeg) ---
+  // The script enables FFmpegExtractAudio by default.
+  // You can configure it further here.
+  "postprocessors": [
+    {
+      // Extracts audio from the downloaded file.
+      "key": "FFmpegExtractAudio"
+      // --- Optional Audio Conversion ---
+      // Uncomment and set these to force conversion to a specific format/quality.
+      // If commented out, yt-dlp keeps the original downloaded audio codec (usually Opus or AAC in M4A/WebM).
+      // Requires FFmpeg.
+      // "preferredcodec": "mp3", // E.g., mp3, aac, flac, opus, vorbis, m4a (uses aac)
+      // "preferredquality": "192" // Quality for the codec (e.g., VBR level for mp3, bitrate for others)
+    }
+    // You can add other yt-dlp postprocessors here if needed.
+  ],
+
+  // --- Metadata and Thumbnail Embedding (Requires FFmpeg/AtomicParsley/etc) ---
+  // Default: true (Attempt to embed metadata like title, artist, album into the audio file)
+  "embed_metadata": true,
+  // Default: true (Attempt to embed the cover art thumbnail into the audio file)
+  "embed_thumbnail": true,
+
+  // --- FFmpeg Location ---
+  // Default: null (yt-dlp searches system PATH)
+  // Uncomment and set the path if FFmpeg is not in your PATH. Use forward slashes even on Windows.
+  // "ffmpeg_location": "/usr/bin/ffmpeg", // Example for Linux
+  // "ffmpeg_location": "C:/ffmpeg/bin/ffmpeg.exe", // Example for Windows
+
+  // --- Other Options ---
+  // Default: true (Don't print yt-dlp's own output to console/log) - Recommended for bot use.
+  "quiet": true,
+  // Default: true (Continue downloading album/playlist even if some tracks fail)
+  "ignoreerrors": true,
+  // Default: 'discard_in_playlist' (Speeds up processing, especially for playlists when not downloading all items)
+  "extract_flat": "discard_in_playlist"
+
+  // Add any other valid yt-dlp options here as needed.
+}
