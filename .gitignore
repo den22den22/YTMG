@@ -172,3 +172,14 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Telegram
+*.session
+
+# Files
+*.mp3
+*.webp
+*.ogg
+*.opus
+*.m4a
+*.aac
