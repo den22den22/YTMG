@@ -91,32 +91,26 @@ except Exception as e:
 def load_ydl_opts(config_file: str = 'dlp.conf') -> Dict:
     """Loads yt-dlp options from a JSON file, merging with defaults."""
     default_opts = {
-        'format': 'bestaudio/best', # Prioritize best audio, fallback to best overall
-        'outtmpl': os.path.join(SCRIPT_DIR, '%(title)s-%(id)s.%(ext)s'), # Default save location
-        'noplaylist': True, # Prevent downloading full playlist on single track URL by default
-        'quiet': True, # Suppress yt-dlp console output
-        'writethumbnail': False, # Bot handles Telegram thumbs; yt-dlp handles internal embedding
-
-        # --- Postprocessors ---
-        # Only FFmpegExtractAudio is needed here by default.
-        # Metadata/thumbnail embedding is handled by yt-dlp using flags below if FFmpeg is available.
-        'postprocessors': [{
+    'format': 'bestaudio[ext=m4a]/best[ext=m4a]',
+    'outtmpl': '%(title)s [%(channel)s] [%(id)s].%(ext)s',
+    'audioformat': 'm4a',
+    'noplaylist': True,
+    'extract_flat': 'discard_in_playlist',
+    'ignoreerrors': True,
+    'quiet': True,
+    'add_metadata': True,
+    'embed_metadata': True,
+    'embed_thumbnail': True,
+    'embed_chapters': True,
+    'embed_info_json': True,
+    'parse_metadata': [],
+    'postprocessors': [
+        {
             'key': 'FFmpegExtractAudio',
-            # 'preferredcodec': 'mp3', # Uncomment to force mp3 conversion
-            # 'preferredquality': '192', # Set quality for conversion
-        }],
-
-        'extract_flat': 'discard_in_playlist', # Speeds up playlist analysis (when not downloading all)
-        'ignoreerrors': True, # Continue album download even if some tracks fail
-
-        # --- Top-Level Embedding Flags ---
-        # These tell yt-dlp to attempt embedding using available tools (FFmpeg) during postprocessing.
-        'embed_metadata': True, # Attempt to embed metadata (title, artist, album, etc.)
-        'embed_thumbnail': True, # Attempt to embed cover art thumbnail
-
-        # Optional: Specify FFmpeg location if not in system PATH
-        # 'ffmpeg_location': '/usr/bin/ffmpeg',
-    }
+            'preferredcodec': 'm4a'
+        }
+    ]
+}
     absolute_config_path = os.path.join(SCRIPT_DIR, config_file)
     logger.info(f"Attempting to load yt-dlp options from: {absolute_config_path}")
     try:
@@ -181,7 +175,7 @@ DEFAULT_CONFIG = {
     "whitelist_enabled": True,      # Restrict usage to users in users.csv
     "auto_clear": True,             # Automatically delete previous bot responses on new commands
     "recent_downloads": True,       # Enable the ",last" command
-    "bot_credit": "via YTMG",       # Caption added to sent media
+    "bot_credit": f"via [YTMG](https://github.com/den22den22/YTMG/)",       # Caption added to sent media |  please do not change, thereby you will help the spread of the userbot
     "bot_enabled": True,            # Global enable/disable switch for the bot
     "default_search_limit": 8,      # How many results ytmusicapi should fetch
     "artist_top_songs_limit": 5,    # Max songs shown in ",see -e"
@@ -1543,8 +1537,8 @@ async def handle_search(event: events.NewMessage.Event, args: List[str]):
                         artists_list = item.get('artists', [])
                         artists = ', '.join([a.get('name', '').strip() for a in artists_list if isinstance(a, dict) and a.get('name')]) or 'Unknown Artist'
                         vid = item.get('videoId')
-                        link = f"`https://music.youtube.com/watch?v={vid}`" if vid else '`Нет ID`'
-                        line += f"**{title}** - {artists}\n   └ {link}"
+                        link = f"https://music.youtube.com/watch?v={vid}" if vid else '`Нет ID`'
+                        line += f"**{title}** - {artists}\n   └ [🔗 Ссылка]({link})"
 
                     elif search_type_flag == "-a": # Albums
                         title = item.get('title', 'Unknown Album')
@@ -1552,15 +1546,15 @@ async def handle_search(event: events.NewMessage.Event, args: List[str]):
                         artists = ', '.join([a.get('name', '').strip() for a in artists_list if isinstance(a, dict) and a.get('name')]) or 'Unknown Artist'
                         bid = item.get('browseId')
                         year = item.get('year', '')
-                        link = f"`https://music.youtube.com/browse/{bid}`" if bid else '`Нет ID`'
-                        line += f"**{title}** - {artists}" + (f" ({year})" if year else "") + f"\n   └ {link}"
+                        link = f"https://music.youtube.com/browse/{bid}" if bid else '`Нет ID`'
+                        line += f"**{title}** - {artists}" + (f" ({year})" if year else "") + f"\n   └ [🔗 Ссылка]({link})"
 
                     elif search_type_flag == "-e": # Artists
                         artist_name = item.get('artist', 'Unknown Artist')
                         bid = item.get('browseId')
-                        link = f"`https://music.youtube.com/channel/{bid}`" if bid else '`Нет ID`'
+                        link = f"https://music.youtube.com/channel/{bid}" if bid else '`Нет ID`'
                         if artist_name != 'Unknown Artist' and bid:
-                            line += f"**{artist_name}**\n   └ {link}"
+                            line += f"**{artist_name}**\n   └ [🔗 Ссылка]({link})"
                         else: line = None # Skip if essential info missing
 
                     elif search_type_flag == "-p": # Playlists
@@ -1572,8 +1566,8 @@ async def handle_search(event: events.NewMessage.Event, args: List[str]):
                         elif isinstance(author_data, dict): author = author_data.get('name', '?')
                         pid = item.get('browseId')
                         link_pid = pid.replace('VL', '') if pid and isinstance(pid, str) else None
-                        link = f"`https://music.youtube.com/playlist?list={link_pid}`" if link_pid else '`Нет ID`'
-                        line += f"**{title}** (Автор: {author})\n   └ {link}" # Slightly changed format
+                        link = f"https://music.youtube.com/playlist?list={link_pid}" if link_pid else '`Нет ID`'
+                        line += f"**{title}** (Автор: {author})\n   └ [🔗 Ссылка]({link})" # Slightly changed format
 
                     if line: response_lines.append(line) # Add the formatted line
 
@@ -2719,9 +2713,9 @@ async def handle_last(event: events.NewMessage.Event, args=None):
             link_part = ""
             if browse_id and browse_id != 'N/A' and isinstance(browse_id, str):
                 if browse_id.startswith("UC"): # Artist
-                    link_part = f"[`👤`]({f'https://music.youtube.com/channel/{browse_id}'})"
+                    link_part = f"[👤]({f'https://music.youtube.com/channel/{browse_id}'})"
                 elif browse_id.startswith(("MPRE","MPLA")): # Album
-                     link_part = f"[`💿`]({f'https://music.youtube.com/browse/{browse_id}'})"
+                     link_part = f"[💿]({f'https://music.youtube.com/browse/{browse_id}'})"
             ts_part = f"`({timestamp})`" if timestamp else ""
             lines.append(f"{i + 1}. {name_part} {link_part} {ts_part}".strip())
         else:
@@ -2803,18 +2797,18 @@ async def handle_host(event: events.NewMessage.Event, args: List[str]):
 
         # --- Construct Final Message ---
         text = (
-            f"🖥️ **System Info**\n\n"
-            f" • **Host:** `{hostname}`\n"
-            f" • **OS:** `{os_name}`\n"
-            # f" • **Kernel:** `{kernel}`\n" # Often too verbose
-            f" • **Arch:** `{architecture}`\n"
-            f" • **Uptime:** `{uptime_str}`\n\n"
+            f"🖥️ **System Info**\n"
+            f" ├ **Host:** `{hostname}`\n"
+            f" ├ **OS:** `{os_name}`\n"
+            f" ├ **Kernel:** `{kernel}`\n"
+            f" ├ **Arch:** `{architecture}`\n"
+            f" └ **Uptime:** `{uptime_str}`\n\n"
             f"⚙️ **Hardware**\n"
-            f" • **CPU:** `{cpu_info}`\n"
-            f" • **RAM:** `{ram_info}`\n"
-            f" • **Disk (/):** `{disk_info}`\n\n"
+            f" ├ **CPU:** `{cpu_info}`\n"
+            f" ├ **RAM:** `{ram_info}`\n"
+            f" └ **Disk (/):** `{disk_info}`\n\n"
             f"🌐 **Network**\n"
-            f" • **Ping:** `{ping_result}`"
+            f" └ **Ping:** `{ping_result}`"
         )
         await response_msg.edit(text)
 

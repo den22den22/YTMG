@@ -173,8 +173,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Telegram
+# Telethon
 *.session
+*.session-journal
 
 # Files
 *.mp3
@@ -183,3 +184,14 @@ cython_debug/
 *.opus
 *.m4a
 *.aac
+*.csv
+
+# yt-dlp
+cookies.txt
+dlp.conf
+
+# cfg
+UBOT.cfg
+
+# logs
+bot_log.txt
