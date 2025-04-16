@@ -195,3 +195,6 @@ UBOT.cfg
 
 # logs
 bot_log.txt
+
+# YTMUSICAPI
+headers_auth.json

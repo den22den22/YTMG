@@ -1,52 +1,54 @@
 # YTMG (YouTube Music Grabber)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html) [![Version](https://img.shields.io/badge/Version-v0.2.3-green)](https://github.com/den22den22/YTMG/releases/tag/v0.2.3)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html) [![Version](https://img.shields.io/badge/Version-v0.3.0-green)](https://github.com/den22den22/YTMG/releases/tag/v0.2.3)
 
-**YTMG** — это Телеграм юзербот, использующий `ytmusicapi` для удобного поиска, просмотра информации и скачивания музыки и альбомов с YouTube Music прямо в ваш чат Telegram.
+**YTMG** is a Telegram userbot that utilizes `ytmusicapi` to conveniently search, view information, and download music and albums from YouTube Music directly into your Telegram chat.
 
-**Важное примечание:** Этот код в значительной степени написан с помощью ИИ. Некоторые части могут быть неоптимальными или нелогичными. Гарантии стабильной работы не предоставляется. Используйте на свой страх и риск.
-
----
-
-## ⚠️ Дисклеймер
-
-*   Эта программа предоставляется "КАК ЕСТЬ", без каких-либо гарантий.
-*   Автор не несет ответственности за любой ущерб, вызванный использованием программы.
-*   **Пользователь несет полную ответственность за соблюдение авторских прав на скачиваемый контент и Условий использования (TOS) сервисов YouTube/YouTube Music и Telegram.**
-*   Использование бота для нарушения авторских прав или Условий обслуживания YouTube/Telegram **строго запрещено**. Функционал скачивания предоставляется для личного ознакомления и резервного копирования легально приобретенного или свободно распространяемого контента.
+**Important Note:** This code was largely written with the help of AI. Some parts might be suboptimal or illogical. Stable operation is not guaranteed. Use at your own risk.
 
 ---
 
-## Основные возможности
+## ⚠️ Disclaimer
 
-*   🎵 **Поиск:** Поиск треков, альбомов, плейлистов и исполнителей на YouTube Music.
-*   ℹ️ **Просмотр информации:** Получение детальной информации о треках, альбомах, плейлистах и исполнителях, включая обложки, списки треков и популярные релизы.
-*   ⬇️ **Скачивание:**
-    *   Скачивание отдельных треков с корректными метаданными (название, исполнитель, альбом, год) и встроенной обложкой (требуется `ffmpeg`).
-    *   Скачивание целых альбомов (треки отправляются группой).
-*   👥 **Белый список:** Возможность ограничить использование бота только доверенными пользователями Telegram (опционально).
-*   📜 **История:** Просмотр списка последних скачанных треков.
-*   ⚙️ **Системная информация:** Отображение информации о системе, на которой запущен бот.
-*   🗑️ **Авто-очистка:** Автоматическое удаление предыдущих ответов бота для поддержания чистоты в чате (настраиваемо).
-*   🔧 **Настройка:**
-    *   Настраиваемый префикс команд.
-    *   Настраиваемая подпись (кредит) к отправляемым файлам с поддержкой Markdown-ссылок.
-    *   Гибкая настройка параметров скачивания через конфигурационный файл `yt-dlp`.
+*   This program is provided "AS IS", without any warranty.
+*   The author is not responsible for any damage caused by using the program.
+*   **The user bears full responsibility for respecting the copyrights of the downloaded content and the Terms of Service (TOS) of YouTube/YouTube Music and Telegram.**
+*   Using the bot to infringe copyrights or violate the YouTube/Telegram Terms of Service is **strictly prohibited**. The download functionality is provided for personal evaluation and backup of legally acquired or freely distributable content.
 
 ---
 
-## Требования
+## Key Features
 
-*   **Python:** 3.8 или выше (рекомендуется 3.10+).
-*   **Git:** Для клонирования репозитория.
-*   **pip:** Для установки зависимостей Python.
-*   **FFmpeg:** **Обязателен** для скачивания аудио, встраивания метаданных и обложек. Он должен быть установлен в вашей системе и доступен в переменной `PATH`, либо путь к нему должен быть указан в `dlp.conf`.
+*   🎵 **Search:** Find tracks, albums, playlists, and artists on YouTube Music.
+*   ℹ️ **View Info:** Get detailed information about tracks, albums, playlists, and artists, including cover art, track lists, and popular releases.
+*   ⬇️ **Download:**
+    *   Download individual tracks with correct metadata (title, artist, album, year) and embedded cover art (requires `ffmpeg`).
+    *   Download entire albums (tracks are sent sequentially).
+    *   Get track lyrics (sent as a message or HTML file if too long).
+*   👥 **Whitelist:** Option to restrict bot usage to trusted Telegram users only.
+*   📜 **History:** View a list of recently downloaded tracks (`last` command) and your YouTube Music listening history (`alast` command, requires authentication).
+*   👍 **Likes & Recommendations:** Fetch your liked songs (`likes` command) and personalized recommendations (`rec` command) (requires authentication).
+*   ⚙️ **System Info:** Display information about the system running the bot (`host` command).
+*   🗑️ **Auto-Clear:** Automatically delete previous bot responses to keep the chat clean (configurable).
+*   🔧 **Configuration:**
+    *   Customizable command prefix.
+    *   Customizable caption (credit) for sent files with Markdown link support.
+    *   Flexible download parameter tuning via the `yt-dlp` configuration file (`dlp.conf`).
 
 ---
 
-## Установка FFmpeg
+## Requirements
 
-`FFmpeg` — это критически важная зависимость. Установите его с помощью менеджера пакетов вашей системы:
+*   **Python:** 3.8 or higher (3.10+ recommended).
+*   **Git:** To clone the repository.
+*   **pip:** To install Python dependencies.
+*   **FFmpeg:** **Required** for downloading audio, embedding metadata, and cover art. It must be installed on your system and available in the `PATH` environment variable, or the path to it must be specified in `dlp.conf`.
+
+---
+
+## Installing FFmpeg
+
+`FFmpeg` is a critical dependency. Install it using your system's package manager:
 
 *   **Debian/Ubuntu:**
     ```bash
@@ -60,130 +62,139 @@
     ```bash
     sudo dnf install ffmpeg
     ```
-*   **macOS (используя Homebrew):**
+*   **macOS (using Homebrew):**
     ```bash
     brew install ffmpeg
     ```
 *   **Windows:**
-    1.  Скачайте сборку с официального сайта [ffmpeg.org](https://ffmpeg.org/download.html) (например, от gyan.dev или BtbN).
-    2.  Распакуйте архив.
-    3.  Добавьте путь к папке `bin` внутри распакованного архива в системную переменную `PATH` или укажите полный путь к `ffmpeg.exe` в параметре `ffmpeg_location` файла `dlp.conf`.
+    1.  Download a build from the official [ffmpeg.org](https://ffmpeg.org/download.html) site (e.g., from gyan.dev or BtbN).
+    2.  Extract the archive.
+    3.  Add the path to the `bin` folder inside the extracted archive to your system's `PATH` variable, or specify the full path to `ffmpeg.exe` in the `ffmpeg_location` parameter of `dlp.conf`.
 
 ---
 
-## Настройка
+## Setup
 
-1.  **Клонирование репозитория:**
+1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/den22den22/ytmg.git
-    cd ytmg
+    git clone https://github.com/den22den22/YTMG.git
+    cd YTMG
     ```
 
-2.  **Установка зависимостей Python:**
+2.  **Install Python dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  **Настройка Telegram API:**
-    *   Получите ваши `API_ID` и `API_HASH` на [my.telegram.org](https://my.telegram.org/apps).
-    *   **ВАЖНО:** Не указывайте их напрямую в коде! Бот ожидает их как **переменные окружения**. Установите переменные `TELEGRAM_API_ID` и `TELEGRAM_API_HASH` в вашей системе перед запуском бота.
-        *   *Пример для Linux/macOS (временная установка):*
+3.  **Configure Telegram API:**
+    *   Obtain your `API_ID` and `API_HASH` from [my.telegram.org/apps](https://my.telegram.org/apps).
+    *   **IMPORTANT:** Do not hardcode them into the script! The bot expects them as **environment variables**. Set the `TELEGRAM_API_ID` and `TELEGRAM_API_HASH` variables in your system before running the bot.
+        *   *Example for Linux/macOS (temporary session):*
             ```bash
             export TELEGRAM_API_ID=1234567
             export TELEGRAM_API_HASH='abcdef1234567890abcdef1234567890'
             python main.py
             ```
-        *   *Рекомендуется:* Использовать `.env` файл и библиотеку типа `python-dotenv` (если хотите модифицировать код) или настроить переменные окружения на уровне системы/сервиса.
+        *   *Recommended:* Use a `.env` file and a library like `python-dotenv` (if you modify the code) or configure environment variables at the system/service level.
 
-4.  **Аутентификация YTMusic (Опционально):**
-    *   Для доступа к приватным плейлистам, лайкам и другому контенту, требующему входа в аккаунт YouTube Music, необходимо создать файл `headers_auth.json`.
-    *   Следуйте **официальной инструкции `ytmusicapi`**: [Настройка с помощью браузера](https://ytmusicapi.readthedocs.io/en/latest/setup/browser.html).
-    *   Поместите сгенерированный файл `headers_auth.json` в ту же директорию, где находится `main.py`.
-    *   Если этот файл отсутствует, бот будет работать в неаутентифицированном режиме (функционал будет ограничен публичным контентом).
+4.  **YTMusic Authentication (Optional but Recommended):**
+    *   To access private playlists, liked songs, recommendations, history, and other content requiring a YouTube Music account login, you need to create a `headers_auth.json` file.
+    *   Follow the **official `ytmusicapi` instructions**: [Setup using a browser](https://ytmusicapi.readthedocs.io/en/latest/setup/browser.html).
+    *   Place the generated `headers_auth.json` file in the same directory as `main.py`.
+    *   If this file is missing, the bot will operate in unauthenticated mode (functionality will be limited to public content).
 
-5.  **Конфигурация бота (`UBOT.cfg`):**
-    *   Скопируйте файл `UBOT.cfg.example` в `UBOT.cfg`:
+5.  **Bot Configuration (`UBOT.cfg`):**
+    *   Copy the example configuration file:
         ```bash
         cp UBOT.cfg.example UBOT.cfg
         ```
-    *   Отредактируйте `UBOT.cfg` по вашему усмотрению:
-        *   `prefix`: Префикс для команд (например, `,`).
-        *   `whitelist_enabled`: `true` для включения белого списка, `false` для разрешения использования бота всем.
-        *   `bot_credit`: Текст подписи к файлам. Поддерживает Markdown для ссылок (например, `"via [YTMG](https://github.com/den22den22/ytmg)"`). Не забудьте также установить `parse_mode='md'` в коде отправки, если используете ссылки.
-        *   `auto_clear`: `true` для автоматической очистки старых сообщений бота.
-        *   Другие параметры см. в файле и комментариях в `main.py` (секция `DEFAULT_CONFIG`).
+    *   Edit `UBOT.cfg` according to your preferences:
+        *   `prefix`: Command prefix (e.g., `,`).
+        *   `whitelist_enabled`: `true` to enable the whitelist, `false` to allow everyone to use the bot.
+        *   `bot_credit`: Caption text for sent files. Supports Markdown for links (e.g., `"via [YTMG](https://github.com/den22den22/YTMG/)"`). Ensure you set `parse_mode='md'` in the sending code if using links (currently handled by the bot).
+        *   `auto_clear`: `true` to automatically clear old bot messages.
+        *   Other parameters: See the file and comments in `main.py` (`DEFAULT_CONFIG` section).
 
-6.  **Конфигурация yt-dlp (`dlp.conf`):**
-    *   Скопируйте файл `dlp.conf.example` в `dlp.conf`:
+6.  **yt-dlp Configuration (`dlp.conf`):**
+    *   Copy the example configuration file:
         ```bash
         cp dlp.conf.example dlp.conf
         ```
-    *   Отредактируйте `dlp.conf` при необходимости. Основные параметры:
-        *   `format`: Предпочитаемый формат аудио/видео (см. документацию `yt-dlp`). По умолчанию `bestaudio/best`.
-        *   `postprocessors`: Настройки пост-обработки (конвертация, встраивание метаданных/обложки).
-            *   **ВНИМАНИЕ:** Не удаляйте секции с ключами `FFmpegExtractAudio`, `EmbedMetadata`, `EmbedThumbnail`, если хотите, чтобы бот конвертировал аудио и встраивал метаданные/обложки.
-            *   `preferredcodec`, `preferredquality`: Настройка кодека и качества для `FFmpegExtractAudio`.
-        *   `outtmpl`: Шаблон пути для сохранения файлов. По умолчанию сохраняются в директорию бота.
-        *   `ffmpeg_location`: Раскомментируйте и укажите полный путь к `ffmpeg`, если он не находится в `PATH`.
+    *   Edit `dlp.conf` if necessary. Key parameters:
+        *   `format`: Preferred audio/video format (see `yt-dlp` documentation). Default is `bestaudio/best`.
+        *   `postprocessors`: Post-processing settings (conversion, embedding metadata/thumbnails).
+            *   **ATTENTION:** Do not remove sections with keys `FFmpegExtractAudio`, `EmbedMetadata`, `EmbedThumbnail` if you want the bot to convert audio and embed metadata/thumbnails.
+            *   `preferredcodec`, `preferredquality`: Codec and quality settings for `FFmpegExtractAudio`.
+        *   `outtmpl`: Template for the output file path. Defaults to saving in the bot's directory.
+        *   `ffmpeg_location`: Uncomment and provide the full path to `ffmpeg` if it's not in your `PATH`.
 
-7.  **Белый список (`users.csv`):**
-    *   Если `whitelist_enabled` установлено в `true`, создайте файл `users.csv` в директории бота.
-    *   Добавьте пользователей в формате `Имя;UserID` (каждая строка - новый пользователь). `UserID` можно узнать у ботов типа `@userinfobot`.
-    *   Имя используется для удобства в команде `,list`.
+7.  **Whitelist (`users.csv`):**
+    *   If `whitelist_enabled` is set to `true`, create a `users.csv` file in the bot's directory.
+    *   Add users in the format `Name;UserID` (one user per line). You can find a user's ID using bots like `@userinfobot`.
+    *   The name is used for display purposes in the `,list` command.
+
+8.  **.gitignore:**
+    *   A `.gitignore` file is included in the repository to prevent accidental committing of sensitive files (like `telegram_session.session`, `headers_auth.json`), logs, and temporary download files.
 
 ---
 
-## Запуск бота
+## Running the Bot
 
-1.  Убедитесь, что вы находитесь в директории с `main.py`.
-2.  Убедитесь, что установлены переменные окружения `TELEGRAM_API_ID` и `TELEGRAM_API_HASH`.
-3.  Запустите скрипт:
+1.  Ensure you are in the directory containing `main.py`.
+2.  Make sure the `TELEGRAM_API_ID` and `TELEGRAM_API_HASH` environment variables are set.
+3.  Run the script:
     ```bash
     python main.py
     ```
-4.  При первом запуске Telethon попросит вас войти в ваш аккаунт Telegram (ввести номер телефона и код подтверждения). Будет создан файл сессии (`telegram_session`), чтобы не входить каждый раз. **Никогда не делитесь этим файлом!**
-5.  Для работы в фоновом режиме рекомендуется использовать `screen` или `tmux`:
+4.  On the first run, Telethon will prompt you to log in to your Telegram account (enter phone number and confirmation code). A session file (`telegram_session.session`) will be created to avoid logging in every time. **Never share this file!**
+5.  For running in the background, using `screen` or `tmux` is recommended:
     ```bash
-    # Пример с screen
-    screen -S ytmgbot # Создать сессию
-    # Установить переменные окружения (если нужно)
+    # Example using screen
+    screen -S ytmgbot # Create a screen session
+    # Set environment variables if needed
     export TELEGRAM_API_ID=...
     export TELEGRAM_API_HASH=...
     python main.py
-    # Отключиться от сессии: Ctrl+A, затем D
-    # Подключиться обратно: screen -r ytmgbot
+    # Detach from session: Ctrl+A, then D
+    # Re-attach: screen -r ytmgbot
     ```
 
 ---
 
-## Использование
+## Usage
 
-Используйте команды в любом чате Telegram (включая "Избранное"), где активен ваш пользовательский аккаунт. Основные команды:
+Use the commands in any Telegram chat (including Saved Messages) where your user account is active. Core commands:
 
-*   `,search -t <запрос>`: Поиск треков.
-*   `,search -a <запрос>`: Поиск альбомов.
-*   `,search -p <запрос>`: Поиск плейлистов.
-*   `,search -e <запрос>`: Поиск исполнителей.
-*   `,see [-i] <ссылка или ID>`: Показать информацию о треке/альбоме/плейлисте/исполнителе (`-i` для показа обложки).
-*   `,dl -t <ссылка>`: Скачать трек.
-*   `,dl -a <ссылка>`: Скачать альбом.
-*   `,last`: Показать недавно скачанные треки.
-*   `,host`: Показать информацию о системе.
-*   `,help`: Показать это сообщение справки.
-*   `,list` / `,add` / `,del`: Управление белым списком (только владелец).
+*   `,search -t <query>`: Search for tracks.
+*   `,search -a <query>`: Search for albums.
+*   `,search -p <query>`: Search for playlists.
+*   `,search -e <query>`: Search for artists.
+*   `,see [-i] [-txt] <link or ID>`: Show info about a track/album/playlist/artist (`-i` for cover, `-txt` for lyrics).
+*   `,dl -t [-txt] <link>`: Download a track (`-txt` to also send lyrics).
+*   `,dl -a <link>`: Download an album/playlist.
+*   `,last`: Show recently downloaded tracks.
+*   `,alast`: Show your YTMusic listening history (auth required).
+*   `,likes`: Show your liked songs (auth required).
+*   `,rec`: Get music recommendations (auth required).
+*   `,text <link or ID>`: Get lyrics for a track.
+*   `,host`: Show system information.
+*   `,help`: Show the help message.
+*   `,list` / `,add <user>` / `,del <user>`: Manage the whitelist (owner only).
+*   `,clear`: Manually clear previous bot responses.
 
-Полный список команд и их описание доступны по команде `,help` (префикс может быть изменен в `UBOT.cfg`).
+The full list of commands and their descriptions are available via the `,help` command (the prefix can be changed in `UBOT.cfg`).
 
 ---
 
-## Лицензия
+## License
 
-Этот проект лицензирован под **GNU General Public License v3.0**. Полный текст лицензии см. в файле [LICENSE](LICENSE).
+This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for the full text.
 
 ---
 
-## Благодарности
+## Acknowledgements
 
-*   Разработчикам [ytmusicapi](https://github.com/sigma67/ytmusicapi)
-*   Разработчикам [yt-dlp](https://github.com/yt-dlp/yt-dlp)
-*   Разработчикам [Telethon](https://github.com/LonamiWebs/Telethon)
+*   Developers of [ytmusicapi](https://github.com/sigma67/ytmusicapi)
+*   Developers of [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+*   Developers of [Telethon](https://github.com/LonamiWebs/Telethon)
+*   Developers of [Pillow](https://python-pillow.org/), [psutil](https://github.com/giampaolo/psutil), [requests](https://requests.readthedocs.io/)
