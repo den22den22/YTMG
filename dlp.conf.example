@@ -1,0 +1,64 @@
+// Example configuration file for yt-dlp.
+// This file allows you to customize how yt-dlp downloads and processes media.
+// Options are passed directly to yt-dlp. See yt-dlp documentation for all available options:
+// https://github.com/yt-dlp/yt-dlp#usage
+// https://github.com/yt-dlp/yt-dlp#format-selection
+// https://github.com/yt-dlp/yt-dlp#postprocessor-options
+
+{
+    // --- Download Format ---
+    // Specifies the preferred format. 'bestaudio[ext=m4a]' attempts to get the best audio-only in m4a.
+    // Falls back to 'best[ext=m4a]' which might include video but extract audio.
+    // You can change 'm4a' to 'mp3', 'opus', 'flac', etc. if ffmpeg is installed and configured.
+    "format": "bestaudio[ext=m4a]/best[ext=m4a]",
+
+    // --- Output Template ---
+    // Specifies the filename template for downloaded files.
+    // By default, saves to the script directory. Customize as needed.
+    // Common fields: %(title)s, %(artist)s, %(album)s, %(channel)s, %(id)s, %(ext)s
+    // The bot's download_track function ensures playlist index is removed for single tracks.
+    "outtmpl": "%(title)s [%(artist)s] [%(id)s].%(ext)s",
+
+    // --- General Options ---
+    "noplaylist": true, // Important: Set to true when downloading single tracks via `dl -t`. Bot overrides for `dl -a`.
+    "extract_flat": "discard_in_playlist", // Extract basic info without downloading for playlists, discard if inside another playlist.
+    "ignoreerrors": true, // Continue extraction/downloading on errors (especially for playlists).
+    "quiet": true, // Suppress yt-dlp stdout/stderr output (bot handles progress).
+    "no_warnings": true, // Suppress warnings.
+    "ratelimit": 5000000, // Optional: Limit download speed (bytes per second). Example: 5MB/s. Remove or set to null for no limit.
+
+    // --- Metadata and Embedding ---
+    "add_metadata": true, // Add metadata to the file (requires ffmpeg).
+    "embed_metadata": true, // Embed metadata inside the file (requires ffmpeg).
+    "embed_thumbnail": true, // Embed thumbnail as cover art (requires ffmpeg and Pillow).
+    "embed_chapters": true, // Embed chapters (if available).
+    "embed_info_json": false, // Embed the entire info JSON (usually not needed).
+
+    // --- Postprocessing (Requires FFmpeg) ---
+    "postprocessors": [
+        {
+            "key": "FFmpegExtractAudio", // Extract audio from video if needed, or re-encode audio.
+            "preferredcodec": "m4a", // Preferred audio codec (e.g., "mp3", "m4a", "opus", "flac"). Must be supported by FFmpeg.
+            "preferredquality": "192" // Preferred audio quality (VBR or ABR, depends on codec). Use "0" for best VBR quality with mp3/opus.
+        },
+        {
+            "key": "FFmpegMetadata" // Handles embedding metadata/thumbnail. Ensure this is present.
+        }
+         // Add other postprocessors here if needed, e.g., "SponsorBlock", "EmbedSubs"
+    ],
+
+    // --- External Dependencies ---
+    // If ffmpeg is not in your system's PATH, uncomment the line below and provide the full path.
+    // "ffmpeg_location": "/path/to/your/ffmpeg/executable",
+
+    // --- Cookies ---
+    // If you need to use cookies (e.g., for private content not handled by headers_auth.json, or geo-restricted content),
+    // specify the path to a cookies file. The bot looks for 'cookies.txt' in the script dir by default.
+    // "cookiefile": "/path/to/your/cookies.txt",
+
+    // --- Other advanced options ---
+    // See yt-dlp documentation. For example:
+    // "proxy": "http://[user:password@]host[:port]", // Use a proxy
+    // "retries": 5 // Number of retries for failed downloads
+
+}

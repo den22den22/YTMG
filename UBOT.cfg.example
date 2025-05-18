@@ -1,12 +1,46 @@
+// Example configuration file for the YTMG userbot.
+// This is a JSON file. Ensure all keys and string values are enclosed in double quotes.
+// Use true/false for boolean values (no quotes). Numbers are not quoted.
+
 {
+    // --- Command Prefix ---
+    // The character(s) that must precede a command for the bot to recognize it.
     "prefix": ",",
-    "progress_messages": True,      # Show step-by-step progress for commands
-    "whitelist_enabled": True,      # Restrict usage to users in users.csv
-    "auto_clear": True,             # Automatically delete previous bot responses on new commands
-    "recent_downloads": True,       # Enable the ",last" command
-    "bot_credit": f"via [YTMG](https://github.com/den22den22/YTMG/)",       # Caption added to sent media |  please do not change, thereby you will help the spread of the userbot
-    "bot_enabled": True,            # Global enable/disable switch for the bot
-    "default_search_limit": 8,      # How many results ytmusicapi should fetch
-    "artist_top_songs_limit": 5,    # Max songs shown in ",see -e"
-    "artist_albums_limit": 3,       # Max albums shown in ",see -e"
+
+    // --- Progress Messages ---
+    // If true, the bot will send and update messages indicating the progress of downloads, searches, etc.
+    // If false, the bot will only send the final result message.
+    "progress_messages": true,
+
+    // --- Auto-Clear ---
+    // If true, the bot will automatically delete its previous responses in a chat
+    // when a new command from the auto-clear list (search, see, download, etc.) is received in that chat.
+    // This helps keep the chat clean.
+    "auto_clear": true,
+
+    // --- Recent Downloads History (`last` command) ---
+    // If true, the bot will keep a small history of recently downloaded tracks in 'last.csv'.
+    // If false, the 'last' command will always show an empty list.
+    "recent_downloads": true,
+
+    // --- Bot Credit/Caption ---
+    // Text added as a caption to audio files sent by the bot.
+    // Supports Markdown V2 formatting for links (e.g., [Text](URL)).
+    // The bot automatically sets the parse_mode for this caption.
+    "bot_credit": "via [YTMG](https://github.com/den22den22/YTMG/)",
+    // Set to "" (empty string) if you don't want any caption.
+
+    // --- Bot Enabled Status ---
+    // If false, the bot will ignore all incoming messages, effectively disabling it.
+    // Can be useful for temporary pauses without stopping the script.
+    "bot_enabled": true,
+
+    // --- Limits for API Calls ---
+    // These limits control how many results are fetched/displayed for certain commands.
+    "default_search_limit": 8, // Max results for `search` command (excluding -v which defaults to 10-20 from yt-dlp)
+    "artist_top_songs_limit": 5, // Max popular songs to show for artist `see`
+    "artist_albums_limit": 3, // Max albums/singles to show for artist `see`
+    "recommendations_limit": 8, // Max recommendations for `rec`
+    "history_limit": 10, // Max history entries for `alast`
+    "liked_songs_limit": 15 // Max liked songs for `likes`
 }

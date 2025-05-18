@@ -1,10 +1,10 @@
 # YTMG (YouTube Music Grabber)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html) [![Version](https://img.shields.io/badge/Version-v0.3.0-green)](https://github.com/den22den22/YTMG/releases/tag/v0.3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html) [![Version](https://img.shields.io/badge/Version-v0.4.0-green)](https://github.com/den22den22/YTMG/releases/tag/v0.4.0)
 
-**YTMG** is a Telegram userbot that utilizes `ytmusicapi` to conveniently search, view information, and download music and albums from YouTube Music directly into your Telegram chat.
+**YTMG** is a Telegram userbot that utilizes `ytmusicapi` and `yt-dlp` to conveniently search, view information about, and download music and albums from YouTube Music directly into your Telegram chat.
 
-**Important Note:** This code was largely written with the help of AI. Some parts might be suboptimal or illogical. Stable operation is not guaranteed. Use at your own risk.
+**Important Note:** This code was significantly developed with the help of AI. Some parts might be suboptimal or illogical. Stable operation is not guaranteed. Use at your own risk.
 
 ---
 
@@ -19,20 +19,27 @@
 
 ## Key Features
 
-*   🎵 **Search:** Find tracks, albums, playlists, and artists on YouTube Music.
-*   ℹ️ **View Info:** Get detailed information about tracks, albums, playlists, and artists, including cover art, track lists, and popular releases.
-*   ⬇️ **Download:**
-    *   Download individual tracks with correct metadata (title, artist, album, year) and embedded cover art (requires `ffmpeg`).
-    *   Download entire albums (tracks are sent sequentially).
-    *   Get track lyrics (sent as a message or HTML file if too long).
-*   👥 **Whitelist:** Option to restrict bot usage to trusted Telegram users only.
-*   📜 **History:** View a list of recently downloaded tracks (`last` command) and your YouTube Music listening history (`alast` command, requires authentication).
-*   👍 **Likes & Recommendations:** Fetch your liked songs (`likes` command) and personalized recommendations (`rec` command) (requires authentication).
-*   ⚙️ **System Info:** Display information about the system running the bot (`host` command).
-*   🗑️ **Auto-Clear:** Automatically delete previous bot responses to keep the chat clean (configurable).
+*   🎵 **Search (`search`):** Find tracks, albums, playlists, artists, and videos on YouTube Music.
+*   ℹ️ **View Info (`see`):** Get detailed information about a specific entity (track, album, playlist, artist) by its ID or URL.
+    *   For tracks: title, artist, album, duration, ID, link.
+    *   For albums/playlists: title, author, track count, ID, link, list of first few tracks.
+    *   For artists: name, subscriber count, ID, link, **featured track OR track from latest release**, popular tracks, albums/singles.
+    *   Option to include cover art (`-i`) and lyrics (`-txt`, for tracks and artist's special track).
+*   ⬇️ **Download (`dl`, `download`):** Download and send audio files.
+    *   Download individual tracks (`-t`) with automatic metadata tagging (title, artist, album, year) and **cover art embedding** (requires `ffmpeg`).
+    *   Download entire albums or playlists (`-a`) (tracks are sent sequentially).
+    *   Option to include lyrics when downloading an individual track (`-txt`).
+*   📜 **History (`last`, `alast`):**
+    *   View a list of recently downloaded tracks (`last` command - *configurable*).
+    *   View your YouTube Music listening history (`alast` command - **requires authentication**).
+*   👍 **Liked Songs & Recommendations (`likes`, `rec`):**
+    *   Fetch tracks from your "Liked Songs" playlist (`likes` command - **requires authentication**).
+    *   Get personalized music recommendations (`rec` command - **requires authentication**).
+*   ⚙️ **System Info (`host`):** Display detailed information about the system running the bot (OS, CPU, RAM, disk usage for home directory, uptime, ping, and versions of key Python libraries and FFmpeg).
+*   🗑️ **Auto-Clear:** Automatically delete previous bot responses in a chat when a new command is issued from the auto-clear list (configurable in `UBOT.cfg`).
 *   🔧 **Configuration:**
-    *   Customizable command prefix.
-    *   Customizable caption (credit) for sent files with Markdown link support.
+    *   Customizable command prefix (`prefix`).
+    *   Customizable caption (credit) for sent files (`bot_credit`) - supports Markdown links.
     *   Flexible download parameter tuning via the `yt-dlp` configuration file (`dlp.conf`).
 
 ---
@@ -42,13 +49,16 @@
 *   **Python:** 3.8 or higher (3.10+ recommended).
 *   **Git:** To clone the repository.
 *   **pip:** To install Python dependencies.
-*   **FFmpeg:** **Required** for downloading audio, embedding metadata, and cover art. It must be installed on your system and available in the `PATH` environment variable, or the path to it must be specified in `dlp.conf`.
+*   **FFmpeg:** **Required** for downloading audio, embedding metadata, and cover art. It must be installed on your system and available in the `PATH` environment variable, or the full path to the executable must be specified in `dlp.conf`.
+*   **psutil:** Required for the `host` command. Installed via `requirements.txt`.
+*   **requests:** Required for downloading cover art. Installed via `requirements.txt`.
+*   **Pillow (PIL Fork):** Required for image processing (cropping cover art). Installed via `requirements.txt`.
 
 ---
 
 ## Installing FFmpeg
 
-`FFmpeg` is a critical dependency. Install it using your system's package manager:
+`FFmpeg` is a critical dependency for most download features. Install it using your system's package manager:
 
 *   **Debian/Ubuntu:**
     ```bash
@@ -108,33 +118,17 @@
         ```bash
         cp UBOT.cfg.example UBOT.cfg
         ```
-    *   Edit `UBOT.cfg` according to your preferences:
-        *   `prefix`: Command prefix (e.g., `,`).
-        *   `whitelist_enabled`: `true` to enable the whitelist, `false` to allow everyone to use the bot.
-        *   `bot_credit`: Caption text for sent files. Supports Markdown for links (e.g., `"via [YTMG](https://github.com/den22den22/YTMG/)"`). Ensure you set `parse_mode='md'` in the sending code if using links (currently handled by the bot).
-        *   `auto_clear`: `true` to automatically clear old bot messages.
-        *   Other parameters: See the file and comments in `main.py` (`DEFAULT_CONFIG` section).
+    *   Edit `UBOT.cfg` according to your preferences. See the comments in the `UBOT.cfg.example` file for details on each parameter.
 
 6.  **yt-dlp Configuration (`dlp.conf`):**
     *   Copy the example configuration file:
         ```bash
         cp dlp.conf.example dlp.conf
         ```
-    *   Edit `dlp.conf` if necessary. Key parameters:
-        *   `format`: Preferred audio/video format (see `yt-dlp` documentation). Default is `bestaudio/best`.
-        *   `postprocessors`: Post-processing settings (conversion, embedding metadata/thumbnails).
-            *   **ATTENTION:** Do not remove sections with keys `FFmpegExtractAudio`, `EmbedMetadata`, `EmbedThumbnail` if you want the bot to convert audio and embed metadata/thumbnails.
-            *   `preferredcodec`, `preferredquality`: Codec and quality settings for `FFmpegExtractAudio`.
-        *   `outtmpl`: Template for the output file path. Defaults to saving in the bot's directory.
-        *   `ffmpeg_location`: Uncomment and provide the full path to `ffmpeg` if it's not in your `PATH`.
+    *   Edit `dlp.conf` if necessary. This file allows fine-tuning of how `yt-dlp` downloads and processes files. See the comments in the `dlp.conf.example` file and the official `yt-dlp` documentation for details.
 
-7.  **Whitelist (`users.csv`):**
-    *   If `whitelist_enabled` is set to `true`, create a `users.csv` file in the bot's directory.
-    *   Add users in the format `Name;UserID` (one user per line). You can find a user's ID using bots like `@userinfobot`.
-    *   The name is used for display purposes in the `,list` command.
-
-8.  **.gitignore:**
-    *   A `.gitignore` file is included in the repository to prevent accidental committing of sensitive files (like `telegram_session.session`, `headers_auth.json`), logs, and temporary download files.
+7.  **.gitignore:**
+    *   A `.gitignore` file is included in the repository to prevent accidental committing of sensitive files (like `telegram_session.session`, `headers_auth.json`), logs, and temporary download files. Ensure this file is present and contains appropriate entries.
 
 ---
 
@@ -147,7 +141,7 @@
     python main.py
     ```
 4.  On the first run, Telethon will prompt you to log in to your Telegram account (enter phone number and confirmation code). A session file (`telegram_session.session`) will be created to avoid logging in every time. **Never share this file!**
-5.  For running in the background, using `screen` or `tmux` is recommended:
+5.  For running in the background, using `screen` or `tmux` is highly recommended:
     ```bash
     # Example using screen
     screen -S ytmgbot # Create a screen session
@@ -163,26 +157,21 @@
 
 ## Usage
 
-Use the commands in any Telegram chat (including Saved Messages) where your user account is active. Core commands:
+Use the commands in any Telegram chat (including Saved Messages) where your user account is active. The default command prefix is `,` (configurable).
 
-*   `,search -t <query>`: Search for tracks.
-*   `,search -a <query>`: Search for albums.
-*   `,search -p <query>`: Search for playlists.
-*   `,search -e <query>`: Search for artists.
-*   `,see [-i] [-txt] <link or ID>`: Show info about a track/album/playlist/artist (`-i` for cover, `-txt` for lyrics).
-*   `,dl -t [-txt] <link>`: Download a track (`-txt` to also send lyrics).
-*   `,dl -a <link>`: Download an album/playlist.
-*   `,last`: Show recently downloaded tracks.
-*   `,alast`: Show your YTMusic listening history (auth required).
-*   `,likes`: Show your liked songs (auth required).
-*   `,rec`: Get music recommendations (auth required).
-*   `,text <link or ID>`: Get lyrics for a track.
+*   `,help`: Show the help message with command descriptions.
+*   `,search [-t|-a|-p|-e|-v] <query>`: Search YouTube Music. (`-t` tracks, `-a` albums, `-p` playlists, `-e` artists, `-v` videos). Default is tracks.
+*   `,see [-t|-a|-p|-e] [-i] [-txt] <ID or link>`: Show info about an entity. (`-t,-a,-p,-e` optional type hint, `-i` include cover, `-txt` include lyrics - for track/artist special track).
+*   `,dl` / `,download` `-t|-a [-txt] <link>`: Download audio. (`-t` track, `-a` album/playlist, `-txt` include lyrics for track).
+*   `,last`: Show recently downloaded tracks (if enabled).
+*   `,alast`: Show YTMusic history (**auth required**).
+*   `,likes`: Show YTMusic liked songs (**auth required**).
+*   `,rec`: Get YTMusic recommendations (**auth required**).
+*   `,text` / `,lyrics` `<ID or link>`: Get lyrics for a track.
 *   `,host`: Show system information.
-*   `,help`: Show the help message.
-*   `,list` / `,add <user>` / `,del <user>`: Manage the whitelist (owner only).
 *   `,clear`: Manually clear previous bot responses.
 
-The full list of commands and their descriptions are available via the `,help` command (the prefix can be changed in `UBOT.cfg`).
+The full list of commands and their brief descriptions are available via the `,help` command.
 
 ---
 
