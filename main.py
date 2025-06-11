@@ -2222,17 +2222,111 @@ async def handle_see(event: events.NewMessage.Event, args: List[str]):
                 artist_id_for_link = entity_info.get('channelId', entity_id)
                 response_text_parts.append(f"**ID:** `{artist_id_for_link}`")
                 response_text_parts.append(f"**Ссылка:** [YouTube Music](https://music.youtube.com/channel/{artist_id_for_link})")
+
+                latest_release_data_from_api = entity_info.get("latestRelease")
+                latest_release_to_display = None
+
+                # Приоритет: явное поле 'latestRelease' от API
+                if latest_release_data_from_api and isinstance(latest_release_data_from_api, dict) and latest_release_data_from_api.get('title'):
+                    latest_release_to_display = latest_release_data_from_api
+                    logger.debug(f"Using 'latestRelease' from API: {latest_release_to_display.get('title')}")
+                else:
+                    # Фоллбэк: ищем самый новый релиз в секциях 'albums', 'singles', 'eps'
+                    all_releases_from_sections = []
+                    artist_albums_data = entity_info.get("albums", {})
+
+                    if isinstance(artist_albums_data.get("albums"), list):
+                        all_releases_from_sections.extend(artist_albums_data["albums"])
+                    if isinstance(artist_albums_data.get("singles"), list):
+                        all_releases_from_sections.extend(artist_albums_data["singles"])
+                    if isinstance(artist_albums_data.get("eps"), list): # Добавлено: учет EPs
+                        all_releases_from_sections.extend(artist_albums_data["eps"])
+                    # Если есть общий список результатов под "albums" (менее специфичный, но иногда содержит все)
+                    elif isinstance(artist_albums_data.get("results"), list):
+                        # Добавляем только те, что выглядят как альбомы/синглы/EP (имеют year/releaseDate)
+                        all_releases_from_sections.extend([
+                            item for item in artist_albums_data["results"] 
+                            if isinstance(item, dict) and (item.get('year') or item.get('releaseDate'))
+                        ])
+
+                    # Отфильтровываем некорректные записи и готовим для сортировки
+                    valid_releases_for_sort = []
+                    for r_item in all_releases_from_sections:
+                        if isinstance(r_item, dict) and r_item.get('title'): # Убеждаемся, что есть заголовок
+                            release_date_obj = None
+                            effective_year = 0
+
+                            # Попытка распарсить полную дату релиза
+                            if r_item.get('releaseDate'):
+                                for fmt in ('%Y-%m-%d', '%Y-%m', '%Y'): # Попытка разных форматов
+                                    try:
+                                        release_date_obj = datetime.datetime.strptime(r_item['releaseDate'], fmt)
+                                        effective_year = release_date_obj.year
+                                        break
+                                    except ValueError:
+                                        pass # Некорректный формат даты, пробуем следующий
+
+                            # Если полная дата не распарсилась, используем год
+                            if not release_date_obj and str(r_item.get('year', '')).isdigit():
+                                effective_year = int(r_item['year'])
+                                # Создаем фиктивную дату для сортировки, если есть только год
+                                # Приоритет полной даты будет выше
+                                release_date_obj = datetime.datetime(effective_year, 1, 1) # Устанавливаем 1 января для сортировки по году
+
+
+                            if release_date_obj or effective_year > 0:
+                                # Ключ для сортировки: (объект datetime, числовой год, название для стабильности)
+                                sort_key = (release_date_obj, effective_year, r_item.get('title', ''))
+                                valid_releases_for_sort.append((sort_key, r_item))
+                            else:
+                                logger.debug(f"Skipping release '{r_item.get('title')}' due to missing/invalid year/date: {r_item}")
+
+
+                    # Сортируем по дате/году в убывающем порядке, затем по названию
+                    valid_releases_for_sort.sort(key=lambda x: x[0], reverse=True)
+                    
+                    if valid_releases_for_sort:
+                        latest_release_to_display = valid_releases_for_sort[0][1] # Берем сам словарь релиза
+                        logger.debug(f"Found latest release via fallback: {latest_release_to_display.get('title')} (Year: {latest_release_to_display.get('year')}, Date: {latest_release_to_display.get('releaseDate')})")
+                
+                # Формирование блока "Последний релиз"
+                if latest_release_to_display and latest_release_to_display.get('title'):
+                    lr_title = latest_release_to_display.get('title', 'Неизвестный релиз')
+                    lr_artists_raw = latest_release_to_display.get('artists')
+                    lr_artists = format_artists(lr_artists_raw) or title_display
+                    lr_id = latest_release_to_display.get('browseId')
+                    lr_type = latest_release_to_display.get('type') # e.g., 'Single', 'Album', 'EP'
+                    lr_year = latest_release_to_display.get('year')
+                    lr_release_date = latest_release_to_display.get('releaseDate') # Полная дата релиза
+
+                    lr_link_url = f"https://music.youtube.com/browse/{lr_id}" if lr_id else None
+                    # Если это сингл и есть videoId, ссылка ведет на трек
+                    if lr_type == 'Single' and latest_release_to_display.get('videoId'):
+                         lr_link_url = f"https://music.youtube.com/watch?v={latest_release_to_display['videoId']}"
+
+                    release_type_str = f" ({lr_type})" if lr_type else ""
+                    
+                    # Предпочитаем полную дату, если есть, иначе год
+                    date_info_str = ""
+                    if lr_release_date:
+                        date_info_str = f" ({lr_release_date})"
+                    elif lr_year:
+                        date_info_str = f" ({lr_year})"
+                    
+                    response_text_parts.append(f"\n**Последний релиз:**\n• **{lr_title}** - {lr_artists}{release_type_str}{date_info_str}")
+                    if lr_link_url:
+                        response_text_parts[-1] += f" [Ссылка]({lr_link_url})"
+
+                    # Логика для включения текста песни, если это сингл
+                    if include_lyrics and latest_release_to_display.get('videoId') and lr_type == 'Single':
+                        video_id_for_lyrics_later = latest_release_to_display['videoId']
+                        lyrics_browse_id_from_main_entity = latest_release_to_display.get('lyricsBrowseId') or latest_release_to_display.get('lyrics')
+                else:
+                    logger.info(f"No explicit 'latestRelease' or suitable recent album/single/EP found for artist {entity_id}.")
+
+                songs_limit = config.get("artist_top_songs_limit", 5); albums_limit = config.get("artist_albums_limit", 3)
                 artist_songs_data = entity_info.get("songs", {}); artist_songs_list = []
                 if isinstance(artist_songs_data.get("results"), list): artist_songs_list = artist_songs_data["results"]
-                if artist_songs_list:
-                    special_track_info_for_artist = artist_songs_list[0]
-                    stfia_title = special_track_info_for_artist.get('title', 'Топ трек'); stfia_artists = format_artists(special_track_info_for_artist.get('artists')) or title_display
-                    stfia_id = special_track_info_for_artist.get('videoId'); stfia_link = f"[Ссылка](https://music.youtube.com/watch?v={stfia_id})" if stfia_id else ""
-                    response_text_parts.append(f"\n**🎧 Пример популярного трека:**\n• {stfia_title} - {stfia_artists} {stfia_link}")
-                    if include_lyrics and stfia_id:
-                        video_id_for_lyrics_later = stfia_id
-                        lyrics_browse_id_from_main_entity = special_track_info_for_artist.get('lyricsBrowseId') or special_track_info_for_artist.get('lyrics')
-                songs_limit = config.get("artist_top_songs_limit", 5); albums_limit = config.get("artist_albums_limit", 3)
                 if artist_songs_list and songs_limit > 0 :
                     response_text_parts.append(f"\n**Популярные треки (до {min(len(artist_songs_list), songs_limit)}):**")
                     for s_info in artist_songs_list[:songs_limit]:
@@ -2339,15 +2433,6 @@ async def handle_see(event: events.NewMessage.Event, args: List[str]):
         if files_to_clean_on_exit:
             logger.debug(f"Scheduling cleanup for handle_see (Files: {len(files_to_clean_on_exit)})")
             asyncio.create_task(cleanup_files(*files_to_clean_on_exit))
-        if use_progress and progress_message and \
-           progress_message != final_info_message_object and \
-           not lyrics_message_handled_storage:
-            await asyncio.sleep(2)
-            try:
-                await progress_message.delete()
-                logger.debug(f"Progress message {getattr(progress_message, 'id', 'N/A')} for 'see' cleaned up in finally block.")
-            except Exception: pass
-
 
 # -------------------------
 # Helper: Send Single Track
@@ -2435,7 +2520,6 @@ async def send_single_track(event: events.NewMessage.Event, info: Dict, file_pat
             # allow_cache=False # Consider if files are unique and shouldn't be cached by TG server for reuse by file_id
         )
         logger.info(f"Аудио успешно отправлено: {os.path.basename(file_path)} (Msg ID: {sent_audio_msg.id})")
-        await store_response_message(event.chat_id, sent_audio_msg) # Store the sent audio message
 
         # --- Update last.csv ---
         if config.get("recent_downloads", True):

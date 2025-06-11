@@ -1,6 +1,6 @@
 # YTMG (YouTube Music Grabber)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html) [![Version](https://img.shields.io/badge/Version-v0.5.0-green)](https://github.com/den22den22/YTMG/releases/tag/v0.5.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html) [![Version](https://img.shields.io/badge/Version-v0.5.1-green)](https://github.com/den22den22/YTMG/releases/tag/v0.5.1)
 
 **YTMG** is a Telegram userbot that utilizes `ytmusicapi` and `yt-dlp` to conveniently search, view information about, and download music and albums from YouTube Music directly into your Telegram chat.
 
