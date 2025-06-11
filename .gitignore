@@ -198,3 +198,5 @@ bot_log.txt
 
 # YTMUSICAPI
 headers_auth.json
+
+nohup.out
